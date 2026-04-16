@@ -18,6 +18,8 @@ function App() {
   return () => clearInterval(interval);
 }, []);
 
+//message from ft branch
+
   useEffect(() => {
   tasks.forEach(task => {
     if (task.is_overdue && !task.completed) {
