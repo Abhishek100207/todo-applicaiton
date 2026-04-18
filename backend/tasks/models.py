@@ -5,8 +5,8 @@ class Task(models.Model):
     description = models.TextField(blank=True)
     deadline = models.DateTimeField()
     completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_overdue = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
-    
-    is_overdue = models.BooleanField(default=False)
