@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
@@ -22,6 +23,9 @@ CELERY_BEAT_SCHEDULE = {
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+from dotenv import load_dotenv
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -123,6 +127,7 @@ USE_I18N = False
 USE_TZ = True
 
 CORS_ALLOW_ALL_ORIGINS = True
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 
 
 # Static files (CSS, JavaScript, Images)
