@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import api, { suggestDescription, enhanceDescription } from '../api';
+import { SpeechRecognition } from '@capacitor-community/speech-recognition';
+import { Capacitor } from '@capacitor/core';
 
-function TaskInput({ colors, isDark, fetchTasks }) {
+function TaskInput({ colors, isDark, fetchTasks, isOpen, setIsOpen }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
@@ -12,6 +14,18 @@ function TaskInput({ colors, isDark, fetchTasks }) {
   const [errorMsg, setErrorMsg] = useState('');
 
   const debounceTimeout = useRef(null);
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      SpeechRecognition.addListener('partialResults', (data) => {
+        if (data.matches && data.matches.length > 0) {
+          const transcript = data.matches[0];
+          setDescription(prev => prev + (prev.endsWith(' ') || prev.length === 0 ? '' : ' ') + transcript);
+        }
+        setListening(false);
+      });
+    }
+  }, []);
 
   // Suggestions Debounce
   const handleDescriptionChange = (e) => {
@@ -43,14 +57,37 @@ function TaskInput({ colors, isDark, fetchTasks }) {
     setEnhancing(false);
   };
 
-  const handleSpeech = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
+  const handleSpeech = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { speechRecognition } = await SpeechRecognition.checkPermissions();
+        if (speechRecognition !== 'granted') {
+           const req = await SpeechRecognition.requestPermissions();
+           if (req.speechRecognition !== 'granted') throw new Error('Denied');
+        }
+        setListening(true);
+        await SpeechRecognition.start({
+          language: 'en-US',
+          maxResults: 1,
+          prompt: 'Speak to add description',
+          partialResults: false,
+          popup: true,
+        });
+      } catch (err) {
+        setListening(false);
+        setErrorMsg('Mic permission denied');
+        setTimeout(() => setErrorMsg(''), 2000);
+      }
+      return;
+    }
+
+    const WebSpeech = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!WebSpeech) {
         setErrorMsg('Speech API not supported');
         setTimeout(() => setErrorMsg(''), 2000);
         return;
     }
-    const recognition = new SpeechRecognition();
+    const recognition = new WebSpeech();
     recognition.lang = 'en-US';
     recognition.interimResults = false;
     
@@ -91,6 +128,7 @@ function TaskInput({ colors, isDark, fetchTasks }) {
       setTime('');
       setSuggestions([]);
       fetchTasks();
+      if (typeof setIsOpen === 'function') setIsOpen(false); // Close mobile sheet on submit
     } catch (err) {
       console.error(err);
     }
@@ -109,19 +147,22 @@ function TaskInput({ colors, isDark, fetchTasks }) {
   };
 
   return (
-    <div style={{
-      width: '340px',
-      minWidth: '340px',
-      height: '100%',
+    <div className={`task-input-sidebar ${isOpen ? 'open' : ''}`} style={{
       background: colors.bgCard,
-      borderLeft: `1px solid ${colors.border}`,
-      padding: '24px',
-      overflowY: 'auto',
-      boxSizing: 'border-box',
-      display: 'flex',
-      flexDirection: 'column'
+      borderLeft: `1px solid ${colors.border}`
     }}>
-      <h2 style={{ margin: '0 0 20px 0', fontSize: '1.2rem', color: colors.text }}>New Task</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2 style={{ margin: '0', fontSize: '1.2rem', color: colors.text }}>New Task</h2>
+        {/* Close Button specifically for mobile bottom sheet */}
+        <button 
+          onClick={() => typeof setIsOpen === 'function' && setIsOpen(false)}
+          className="mobile-close-btn"
+          style={{
+            background: 'none', border: 'none', color: colors.textSubtle, fontSize: '24px', cursor: 'pointer',
+            padding: 0, display: window.innerWidth <= 768 ? 'block' : 'none'
+          }}
+        >×</button>
+      </div>
       
       <input 
         style={inputStyle}

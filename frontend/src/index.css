@@ -17,3 +17,107 @@ input[type="datetime-local"].no-calendar-icon::-webkit-calendar-picker-indicator
   display: none;
   -webkit-appearance: none;
 }
+
+/* App container */
+.app-layout {
+  display: flex;
+  height: calc(100vh - 70px);
+  overflow: hidden;
+}
+
+/* Base styles for sidebar task input */
+.task-input-sidebar {
+  width: 340px;
+  min-width: 340px;
+  height: 100%;
+  padding: 24px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* FAB button */
+.fab-button {
+  display: none;
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: 24px;
+  background: #4f46e5;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  font-size: 30px;
+  line-height: 1;
+  text-align: center;
+  border: none;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+  cursor: pointer;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.fab-button:active {
+  transform: scale(0.95);
+}
+
+.overlay {
+  display: none;
+}
+
+/* Mobile responsive fixes */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+  
+  .fab-button {
+    display: flex;
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    backdrop-filter: blur(2px);
+  }
+
+  .overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .task-input-sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    min-width: auto;
+    height: auto;
+    max-height: 85vh;
+    border-left: none !important;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    z-index: 1001;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+  }
+
+  .task-input-sidebar.open {
+    transform: translateY(0);
+  }
+}

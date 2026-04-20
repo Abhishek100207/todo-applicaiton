@@ -25,7 +25,7 @@ CELERY_BEAT_SCHEDULE = {
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 from dotenv import load_dotenv
-load_dotenv(BASE_DIR / '.env')
+load_dotenv(BASE_DIR / '.env', override=True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,7 +37,7 @@ SECRET_KEY = 'django-insecure-#fv813gph^hq^)29xk#$0mx8xajcp1s87_c=59t=pot2*m%v(s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

@@ -43,6 +43,8 @@ class SuggestDescriptionView(APIView):
             suggestions = json.loads(text)
             return Response({"suggestions": suggestions})
         except Exception as e:
+            print(f"SUGGEST AI ERROR: {str(e)}")
+            print(f"USING API KEY: {api_key}")
             # Let's return the error message for debugging purposes
             return Response({"suggestions": [f"Error: {str(e)}"]}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -66,5 +68,7 @@ class EnhanceDescriptionView(APIView):
             enhanced_text = response.text.replace('```', '').strip()
             return Response({"enhanced": enhanced_text})
         except Exception as e:
+            print(f"ENHANCE AI ERROR: {str(e)}")
+            print(f"USING API KEY: {api_key}")
             # Return error for debugging
             return Response({"enhanced": f"Error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)

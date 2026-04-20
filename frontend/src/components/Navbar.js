@@ -52,22 +52,28 @@ function Navbar({ theme, setTheme, view, setView, colors }) {
       </div>
 
       <div>
-        <select 
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
+        <button 
+          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
           style={{
             background: colors.bgApp,
             color: colors.text,
             border: `1px solid ${colors.border}`,
-            padding: '6px 12px',
-            borderRadius: '6px',
+            padding: '8px',
+            borderRadius: '50%',
             cursor: 'pointer',
-            outline: 'none'
+            outline: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '36px',
+            height: '36px',
+            fontSize: '18px',
+            transition: 'background 0.2s'
           }}
+          title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
         >
-          <option value="light">Light Mode</option>
-          <option value="dark">Dark Mode</option>
-        </select>
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
       </div>
     </div>
   );

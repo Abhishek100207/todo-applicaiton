@@ -9,6 +9,7 @@ function App() {
   const [theme, setTheme] = useState('light');
   const [view, setView] = useState('home');
   const [tasks, setTasks] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const isDark = theme === 'dark';
 
@@ -52,13 +53,16 @@ function App() {
       />
 
       {view === 'home' && (
-        <div style={{ display: 'flex', height: 'calc(100vh - 70px)', overflow: 'hidden' }}>
+        <div className="app-layout">
           <TaskList 
             tasks={tasks} colors={colors} isDark={isDark} fetchTasks={fetchTasks} 
           />
+          <div className={`overlay ${isSidebarOpen ? 'active' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
           <TaskInput 
             colors={colors} isDark={isDark} fetchTasks={fetchTasks} 
+            isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen}
           />
+          <button className="fab-button" onClick={() => setIsSidebarOpen(true)}>+</button>
         </div>
       )}
 

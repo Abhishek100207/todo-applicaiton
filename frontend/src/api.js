@@ -1,7 +1,11 @@
 import axios from 'axios';
+import { Capacitor } from '@capacitor/core';
+
+const isNative = Capacitor.isNativePlatform();
+const defaultBaseUrl = isNative ? 'http://10.0.2.2:8000/api/' : 'http://localhost:8000/api/';
 
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL || 'http://10.0.2.2:8000/api/',
+    baseURL: process.env.REACT_APP_API_BASE_URL || defaultBaseUrl,
     headers: {
         'Content-Type': 'application/json'
     }
